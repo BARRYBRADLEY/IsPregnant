@@ -21,6 +21,7 @@ class PregnantEntity extends Human
 
     public function __construct(Skin $skin, Level $level, CompoundTag $nbt)
     {
+		$this->setCanSaveWithChunk(false);
         $this->setSkin($skin);
         parent::__construct($level, $nbt);
         $this->getDataPropertyManager()->setFloat(self::DATA_BOUNDING_BOX_WIDTH, 0.0);
