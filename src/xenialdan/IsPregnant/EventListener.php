@@ -4,6 +4,7 @@ namespace xenialdan\IsPregnant;
 
 use pocketmine\entity\Entity;
 use pocketmine\event\Listener;
+use pocketmine\event\player\PlayerChangeSkinEvent;
 use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\event\player\PlayerQuitEvent;
 use pocketmine\event\player\PlayerRespawnEvent;
@@ -32,5 +33,14 @@ class EventListener implements Listener
 			Loader::addPlayer($event->getPlayer());
 			return;
 		}
+	}
+
+	public function onSkinChange(PlayerChangeSkinEvent $event): void
+	{
+		if ($event->isCancelled()) return;
+		Loader::removePlayer($event->getPlayer());
+		$event->getPlayer()->setGenericFlag(Entity::DATA_FLAG_PREGNANT, (strpos($event->getNewSkin()->getSkinId(), "Alex") !== false));
+		if ($event->getPlayer()->getGenericFlag(Entity::DATA_FLAG_PREGNANT))
+			Loader::addPlayer($event->getPlayer());
 	}
 }
