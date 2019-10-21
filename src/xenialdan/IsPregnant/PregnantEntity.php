@@ -33,6 +33,7 @@ class PregnantEntity extends Human
 
 	public function updateScale()
 	{
+		$this->setSneaking($this->getOwningEntity()->isSneaking());
 		$this->setScale($this->getOwningEntity()->getScale());
 	}
 
