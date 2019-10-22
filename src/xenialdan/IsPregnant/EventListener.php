@@ -43,4 +43,12 @@ class EventListener implements Listener
 		if ($event->getPlayer()->getGenericFlag(Entity::DATA_FLAG_PREGNANT))
 			Loader::addPlayer($event->getPlayer());
 	}
+
+	/* This adds just maybe 1 tick faster response to change sneaking state of belly
+	 * public function onSneak(PlayerToggleSneakEvent $event): void
+	{
+		foreach (Loader::getBellies($event->getPlayer()) as $backpack) {
+			$backpack->updateScale();
+		}
+	}*/
 }

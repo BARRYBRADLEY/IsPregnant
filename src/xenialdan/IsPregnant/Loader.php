@@ -79,7 +79,7 @@ class Loader extends PluginBase
 			$levels = [$level];
 		else $levels = self::getInstance()->getServer()->getLevels();
 		foreach ($levels as $level) {
-			array_merge($entities, array_filter($level->getEntities(), function (Entity $entity) {
+			$entities = array_merge($entities, array_filter($level->getEntities(), function (Entity $entity) {
 				return $entity instanceof PregnantEntity && $entity->isValid() && !$entity->isFlaggedForDespawn() && !$entity->isClosed();
 			}));
 		};
