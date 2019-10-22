@@ -5,6 +5,7 @@ namespace xenialdan\IsPregnant;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Human;
 use pocketmine\entity\Skin;
+use pocketmine\level\Level;
 use pocketmine\level\LevelException;
 use pocketmine\network\mcpe\protocol\SetActorLinkPacket;
 use pocketmine\network\mcpe\protocol\types\EntityLink;
@@ -40,7 +41,7 @@ class Loader extends PluginBase
 		self::$instance = $this;
 		$this->saveResource("belly.png");
 		$this->saveResource("belly.json");
-		self::$skin = new Skin("belly", self::fromImage(imagecreatefrompng($this->getDataFolder() . "belly.png")), "", "geometry.belly", file_get_contents($this->getDataFolder()."belly.json"));
+		self::$skin = new Skin("belly", self::fromImage(imagecreatefrompng($this->getDataFolder() . "belly.png")), "", "geometry.belly", file_get_contents($this->getDataFolder() . "belly.json"));
 		Entity::registerEntity(PregnantEntity::class, true, ['belly']);
 	}
 
@@ -68,12 +69,16 @@ class Loader extends PluginBase
 	}
 
 	/**
+	 * @param Level|null $level If given, searches only in that level
 	 * @return PregnantEntity[]
 	 */
-	private static function getAllBellies(): array
+	private static function getAllBellies(?Level $level = null): array
 	{
 		$entities = [];
-		foreach (self::getInstance()->getServer()->getLevels() as $level) {
+		if ($level instanceof Level)
+			$levels = [$level];
+		else $levels = self::getInstance()->getServer()->getLevels();
+		foreach ($levels as $level) {
 			array_merge($entities, array_filter($level->getEntities(), function (Entity $entity) {
 				return $entity instanceof PregnantEntity && $entity->isValid() && !$entity->isFlaggedForDespawn() && !$entity->isClosed();
 			}));
@@ -88,7 +93,7 @@ class Loader extends PluginBase
 	public static function getBellies(Player $player)
 	{
 		$id = $player->getId();
-		return array_filter(self::getAllBellies(), function (?PregnantEntity $wingEntity) use ($id) {
+		return array_filter(self::getAllBellies($player->getLevel()), function (?PregnantEntity $wingEntity) use ($id) {
 			return $wingEntity instanceof PregnantEntity && $wingEntity->getOwningEntityId() === $id;
 		});
 	}
