@@ -133,9 +133,6 @@ class Loader extends PluginBase
 			$we->getDataPropertyManager()->setLong(Human::DATA_OWNER_EID, $player->getId());
 			$player->getLevel()->addEntity($we);
 			$we->spawnToAll();
-			$pk = new SetActorLinkPacket();
-			$pk->link = new EntityLink($player->getId(), $we->getId(), EntityLink::TYPE_PASSENGER, true);
-			$player->getLevel()->broadcastGlobalPacket($pk);
 		}
 	}
 }

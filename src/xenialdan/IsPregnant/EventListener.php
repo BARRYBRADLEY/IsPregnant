@@ -3,11 +3,13 @@
 namespace xenialdan\IsPregnant;
 
 use pocketmine\entity\Entity;
+use pocketmine\event\entity\EntityTeleportEvent;
 use pocketmine\event\Listener;
 use pocketmine\event\player\PlayerChangeSkinEvent;
 use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\event\player\PlayerQuitEvent;
 use pocketmine\event\player\PlayerRespawnEvent;
+use pocketmine\Player;
 
 class EventListener implements Listener
 {
@@ -31,6 +33,16 @@ class EventListener implements Listener
 		if ($event->getPlayer()->getGenericFlag(Entity::DATA_FLAG_PREGNANT)) {
 			Loader::removePlayer($event->getPlayer());
 			Loader::addPlayer($event->getPlayer());
+			return;
+		}
+	}
+
+    public function onTeleport(EntityTeleportEvent $event): void
+    {
+        if(!$event->getEntity() instanceof Player) return;
+		if ($event->getEntity()->getGenericFlag(Entity::DATA_FLAG_PREGNANT)) {
+			Loader::removePlayer($event->getEntity());
+			Loader::addPlayer($event->getEntity());
 			return;
 		}
 	}

@@ -9,6 +9,8 @@ use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\network\mcpe\protocol\SetActorLinkPacket;
+use pocketmine\network\mcpe\protocol\types\EntityLink;
 use pocketmine\Player;
 
 class PregnantEntity extends Human
@@ -21,28 +23,38 @@ class PregnantEntity extends Human
 
     public function __construct(Skin $skin, Level $level, CompoundTag $nbt)
     {
-		$this->setCanSaveWithChunk(false);
+        $this->setCanSaveWithChunk(false);
         $this->setSkin($skin);
         parent::__construct($level, $nbt);
         $this->getDataPropertyManager()->setFloat(self::DATA_BOUNDING_BOX_WIDTH, 0.0);
         $this->getDataPropertyManager()->setFloat(self::DATA_BOUNDING_BOX_HEIGHT, 0.0);
         $this->setNameTagVisible(false);
         $this->setNameTagAlwaysVisible(false);
-		$this->getDataPropertyManager()->setVector3(self::DATA_RIDER_SEAT_POSITION, new Vector3());
+        $this->getDataPropertyManager()->setVector3(self::DATA_RIDER_SEAT_POSITION, new Vector3());
     }
 
-	public function updateScale()
-	{
-		$this->setSneaking($this->getOwningEntity()->isSneaking());
-		$this->setScale($this->getOwningEntity()->getScale());
-	}
+    protected function sendSpawnPacket(Player $player): void
+    {
+        parent::sendSpawnPacket($player);
+        if ($this->getOwningEntityId() !== null) {
+            $pk = new SetActorLinkPacket();
+            $pk->link = new EntityLink($this->getOwningEntityId(), $this->getId(), EntityLink::TYPE_PASSENGER, true);
+            $player->sendDataPacket($pk);
+        }
+    }
+
+    public function updateScale()
+    {
+        $this->setSneaking($this->getOwningEntity()->isSneaking());
+        $this->setScale($this->getOwningEntity()->getScale());
+    }
 
     public function entityBaseTick(int $tickDiff = 1): bool
     {
         $hasUpdate = Entity::entityBaseTick($tickDiff);
         /** @var Player $player */
         if (($player = $this->getOwningEntity()) instanceof Player && $player->isConnected() && $player->getGenericFlag(Entity::DATA_FLAG_PREGNANT)) {
-			$this->updateScale();
+            $this->updateScale();
             $this->setInvisible(($player->isInvisible() or !$player->isAlive()));
             if (!($this->asPosition()->equals($player->asPosition()) && $this->yaw === $player->yaw)) {
                 $this->setPositionAndRotation($player, $player->getYaw(), 0);
