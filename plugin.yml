@@ -1,5 +1,5 @@
 name: IsPregnant
 main: xenialdan\IsPregnant\Loader
-version: 1.0.3
-api: [3.9.3]
+version: 1.0.4
+api: [3.11.1]
 author: XenialDan
