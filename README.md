@@ -12,8 +12,8 @@ Mojang saves every possible property in any entity, even player. So it happens t
 
 Actually, the mechanic behind that system is quite interesting. If you'd like, check out https://github.com/thebigsmileXD/Backpack where i actually made practical use out of the "wearable geometry" concept created in this plugin.
 ## Information about the messages
-When 
-The sent message is one random word from this video: https://www.youtube.com/watch?v=EShUeudtaFg (Thanks to [@Sandertv](https://github.com/Sandertv/)!)
+When a player is set as pregnant, the addPlayer function sends a message to the player.
+The sent message contains one random word from this video: https://www.youtube.com/watch?v=EShUeudtaFg (Thanks to [@Sandertv](https://github.com/Sandertv/) for the idea and that guy who made an alphabetically ordered list in the video's comment section!)
 ## API
 You can set the data flag to turn a player pregnant (or not pregnant anymore) like this:
 ```php
