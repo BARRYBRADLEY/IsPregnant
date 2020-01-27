@@ -43,19 +43,21 @@ class PregnantEntity extends Human
         }
     }
 
-    public function updateScale()
+    public function updateProperties()
     {
         $this->setSneaking($this->getOwningEntity()->isSneaking());
         $this->setScale($this->getOwningEntity()->getScale());
+        $this->setInvisible(($this->getOwningEntity()->isInvisible() or !$this->getOwningEntity()->isAlive()));
+        if (!empty($this->getDataPropertyManager()->getDirty()))//TODO TEST forced update
+            $this->sendData($this->getViewers());
     }
 
     public function entityBaseTick(int $tickDiff = 1): bool
     {
         $hasUpdate = Entity::entityBaseTick($tickDiff);
         /** @var Player $player */
-        if (($player = $this->getOwningEntity()) instanceof Player && $player->isConnected() && $player->getGenericFlag(Entity::DATA_FLAG_PREGNANT)) {
-            $this->updateScale();
-            $this->setInvisible(($player->isInvisible() or !$player->isAlive()));
+        if (($player = $this->getOwningEntity()) instanceof Player && $player->isConnected()) {
+            $this->updateProperties();
             if (!($this->asPosition()->equals($player->asPosition()) && $this->yaw === $player->yaw)) {
                 $this->setPositionAndRotation($player, $player->getYaw(), 0);
                 $hasUpdate = true;

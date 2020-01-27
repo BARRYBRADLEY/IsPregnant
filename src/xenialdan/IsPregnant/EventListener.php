@@ -5,11 +5,12 @@ namespace xenialdan\IsPregnant;
 use pocketmine\entity\Entity;
 use pocketmine\event\entity\EntityTeleportEvent;
 use pocketmine\event\Listener;
+use pocketmine\event\player\PlayerBedEnterEvent;
+use pocketmine\event\player\PlayerBedLeaveEvent;
 use pocketmine\event\player\PlayerChangeSkinEvent;
 use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\event\player\PlayerQuitEvent;
 use pocketmine\event\player\PlayerRespawnEvent;
-use pocketmine\Player;
 
 class EventListener implements Listener
 {
@@ -19,7 +20,7 @@ class EventListener implements Listener
         if (strpos($event->getPlayer()->getSkin()->getSkinId(), "Alex") !== false) {
             $event->getPlayer()->setGenericFlag(Entity::DATA_FLAG_PREGNANT);
         }
-        if ($event->getPlayer()->getGenericFlag(Entity::DATA_FLAG_PREGNANT))
+        if (Loader::isPregnant($event->getPlayer()))
             Loader::addPlayer($event->getPlayer());
     }
 
@@ -30,20 +31,17 @@ class EventListener implements Listener
 
     public function onRespawn(PlayerRespawnEvent $event): void
     {
-        if ($event->getPlayer()->getGenericFlag(Entity::DATA_FLAG_PREGNANT)) {
+        if (Loader::isPregnant($event->getPlayer())) {
             Loader::removePlayer($event->getPlayer());
             Loader::addPlayer($event->getPlayer());
-            return;
         }
     }
 
     public function onTeleport(EntityTeleportEvent $event): void
     {
-        if (!$event->getEntity() instanceof Player) return;
-        if ($event->getEntity()->getGenericFlag(Entity::DATA_FLAG_PREGNANT)) {
+        if (Loader::isPregnant($event->getEntity())) {
             Loader::removePlayer($event->getEntity());
             Loader::addPlayer($event->getEntity());
-            return;
         }
     }
 
@@ -52,7 +50,7 @@ class EventListener implements Listener
         if ($event->isCancelled()) return;
         Loader::removePlayer($event->getPlayer());
         $event->getPlayer()->setGenericFlag(Entity::DATA_FLAG_PREGNANT, (strpos($event->getNewSkin()->getSkinId(), "Alex") !== false));
-        if ($event->getPlayer()->getGenericFlag(Entity::DATA_FLAG_PREGNANT))
+        if (Loader::isPregnant($event->getPlayer()))
             Loader::addPlayer($event->getPlayer());
     }
 
@@ -63,4 +61,18 @@ class EventListener implements Listener
             $backpack->updateScale();
         }
     }*/
+
+    public function onBedLeave(PlayerBedLeaveEvent $event): void
+    {
+        $player = $event->getPlayer();
+        Loader::removePlayer($player);
+        if (Loader::isPregnant($player)) {
+            Loader::addPlayer($player);
+        }
+    }
+
+    public function onBedEnter(PlayerBedEnterEvent $event): void
+    {
+        Loader::removePlayer($event->getPlayer());
+    }
 }

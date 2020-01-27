@@ -22,6 +22,15 @@ class Loader extends PluginBase
     private static $skin;
 
     /**
+     * @param Entity|null $player
+     * @return bool
+     */
+    public static function isPregnant(?Entity $player): bool
+    {
+        return $player instanceof Player && $player->getGenericFlag(Entity::DATA_FLAG_PREGNANT);
+    }
+
+    /**
      * @return self
      */
     public static function getInstance()
@@ -48,7 +57,6 @@ class Loader extends PluginBase
      * from skinapi
      * @param resource $img
      * @return string
-     * @throws PluginException
      */
     public static function fromImage($img)
     {
@@ -106,7 +114,7 @@ class Loader extends PluginBase
     {
         $this->getServer()->getPluginManager()->registerEvents(new EventListener(), $this);
         foreach ($this->getServer()->getOnlinePlayers() as $player) {
-            if ($player->getGenericFlag(Entity::DATA_FLAG_PREGNANT))
+            if (Loader::isPregnant($player))
                 self::addPlayer($player);
         }
     }
@@ -148,7 +156,7 @@ class Loader extends PluginBase
                 "prangnet",
                 "prefnat",
                 "pregananant",
-                "Pregant",
+                "pregant",
                 "pregante",
                 "pregarnt",
                 "pregat",
